@@ -1,0 +1,38 @@
+spring:
+  shardingsphere:
+    datasource:
+      names: paydb2020,paydb2021
+      paydb2020:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: user
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://127.0.0.1/paydb1?characterEncoding=utf-8&&serverTimezone=UTC
+        username: user
+      paydb2021:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: user
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://127.0.0.1/paydb2?characterEncoding=utf-8&&serverTimezone=GMT%2B8
+        username: user
+    props:
+      sql:
+        show: true
+    sharding:
+      default-database-strategy:
+        standard:
+          precise-algorithm-class-name: com.example.demo.sharding.DataBaseShardingAlgorithm
+          range-algorithm-class-name: com.example.demo.sharding.DataBaseShardingAlgorithm
+          sharding-column: create_time
+      tables:
+        sharding_test:
+          actual-data-nodes: paydb$->{2020..2021}.sharding_test$->{1..12}
+          key-generator:
+            column: id
+            type: SNOWFLAKE
+          table-strategy:
+            standard:
+              precise-algorithm-class-name: com.example.demo.sharding.UserShardingAlgorithm
+              range-algorithm-class-name: com.example.demo.sharding.UserShardingAlgorithm
+              sharding-column: create_time
+
+      default-data-source-name: paydb2020
